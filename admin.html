@@ -229,11 +229,19 @@
       <div class="num" id="todayCount">0</div>
       <div class="label">Today</div>
     </div>
+    <div class="stat-card">
+      <div class="num" id="memberCount">0</div>
+      <div class="label">Total members</div>
+    </div>
   </div>
 
   <div class="toolbar">
     <input type="text" class="search-input" id="searchInput" placeholder="Search by name or email...">
-    <button class="btn btn-ghost" id="refreshBtn">Refresh</button>
+    <div style="display:flex; gap:0.5rem;">
+      <button class="btn btn-primary" id="tabContactBtn">Contact Us</button>
+      <button class="btn btn-ghost" id="tabMembersBtn">Members</button>
+      <button class="btn btn-ghost" id="refreshBtn">Refresh</button>
+    </div>
   </div>
 
   <div id="tableWrap">
@@ -256,8 +264,14 @@
   const refreshBtn = document.getElementById('refreshBtn');
   const totalCount = document.getElementById('totalCount');
   const todayCount = document.getElementById('todayCount');
+  const memberCount = document.getElementById('memberCount');
+
+  const tabContactBtn = document.getElementById('tabContactBtn');
+  const tabMembersBtn = document.getElementById('tabMembersBtn');
 
   let allEntries = [];
+  let allMembers = [];
+  let activeTab = 'contact';
 
   function showDashboard() {
     lockScreen.style.display = 'none';
@@ -280,14 +294,39 @@
       if (result.result === 'success') {
         sessionStorage.setItem('adminPassword', pwd);
         allEntries = result.data || [];
+        allMembers = result.members || [];
         showDashboard();
-        renderTable(allEntries);
-        updateStats(allEntries);
+        renderActiveTab();
+        updateStats();
       } else {
         showLock('Incorrect password. Try again.');
       }
     } catch (err) {
       showLock('Network error. Please try again.');
+    }
+  }
+
+  tabContactBtn.addEventListener('click', () => {
+    activeTab = 'contact';
+    tabContactBtn.className = 'btn btn-primary';
+    tabMembersBtn.className = 'btn btn-ghost';
+    searchInput.value = '';
+    renderActiveTab();
+  });
+
+  tabMembersBtn.addEventListener('click', () => {
+    activeTab = 'members';
+    tabMembersBtn.className = 'btn btn-primary';
+    tabContactBtn.className = 'btn btn-ghost';
+    searchInput.value = '';
+    renderActiveTab();
+  });
+
+  function renderActiveTab() {
+    if (activeTab === 'contact') {
+      renderContactTable(allEntries);
+    } else {
+      renderMembersTable(allMembers);
     }
   }
 
@@ -323,8 +362,9 @@
       const result = await res.json();
       if (result.result === 'success') {
         allEntries = result.data || [];
-        renderTable(allEntries);
-        updateStats(allEntries);
+        allMembers = result.members || [];
+        renderActiveTab();
+        updateStats();
       } else {
         sessionStorage.removeItem('adminPassword');
         showLock('Session expired. Please log in again.');
@@ -334,23 +374,23 @@
     }
   }
 
-  function updateStats(entries) {
-    totalCount.textContent = entries.length;
+  function updateStats() {
+    totalCount.textContent = allEntries.length;
+    memberCount.textContent = allMembers.length;
     const today = new Date().toDateString();
-    const todays = entries.filter(e => {
+    const todays = allEntries.filter(e => {
       const t = new Date(e.Timestamp);
       return t.toDateString() === today;
     });
     todayCount.textContent = todays.length;
   }
 
-  function renderTable(entries) {
+  function renderContactTable(entries) {
     if (!entries.length) {
       tableWrap.innerHTML = '<div class="empty-state">No submissions yet. They will show up here as people fill out the contact form.</div>';
       return;
     }
 
-    // newest first
     const sorted = [...entries].sort((a, b) => new Date(b.Timestamp) - new Date(a.Timestamp));
 
     const rows = sorted.map(entry => {
@@ -374,6 +414,35 @@
       </table>`;
   }
 
+  function renderMembersTable(entries) {
+    if (!entries.length) {
+      tableWrap.innerHTML = '<div class="empty-state">No members yet. They will show up here as people submit the membership form.</div>';
+      return;
+    }
+
+    const sorted = [...entries].sort((a, b) => new Date(b.Timestamp) - new Date(a.Timestamp));
+
+    const rows = sorted.map(entry => {
+      const time = new Date(entry.Timestamp);
+      const formatted = isNaN(time) ? entry.Timestamp : time.toLocaleString();
+      return `
+        <tr>
+          <td class="col-time" data-label="Time">${formatted}</td>
+          <td class="col-email" data-label="Email">${escapeHtml(entry.Email || '')}</td>
+          <td data-label="Skill Level">${escapeHtml(entry['Skill Level'] || '')}</td>
+          <td data-label="Course">${escapeHtml(entry.Course || '')}</td>
+        </tr>`;
+    }).join('');
+
+    tableWrap.innerHTML = `
+      <table>
+        <thead>
+          <tr><th>Time</th><th>Email</th><th>Skill Level</th><th>Course</th></tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  }
+
   function escapeHtml(str) {
     const div = document.createElement('div');
     div.textContent = str;
@@ -382,11 +451,19 @@
 
   searchInput.addEventListener('input', () => {
     const q = searchInput.value.toLowerCase();
-    const filtered = allEntries.filter(e =>
-      (e.Name || '').toLowerCase().includes(q) ||
-      (e.Email || '').toLowerCase().includes(q)
-    );
-    renderTable(filtered);
+    if (activeTab === 'contact') {
+      const filtered = allEntries.filter(e =>
+        (e.Name || '').toLowerCase().includes(q) ||
+        (e.Email || '').toLowerCase().includes(q)
+      );
+      renderContactTable(filtered);
+    } else {
+      const filtered = allMembers.filter(e =>
+        (e.Email || '').toLowerCase().includes(q) ||
+        (e.Course || '').toLowerCase().includes(q)
+      );
+      renderMembersTable(filtered);
+    }
   });
 
   refreshBtn.addEventListener('click', loadData);
