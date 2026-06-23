@@ -58,6 +58,8 @@ if (prefersReducedMotion) {
 const contactForm = document.getElementById('contactForm');
 const formStatus = document.getElementById('formStatus');
 
+const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbzuRu56m0DeaRO_YDzHmL2cSOZR4k07zfcsLbEV2ed7pCT4dgEDHNr3Urpt3pDFyaw/exec";
+
 contactForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -72,23 +74,29 @@ contactForm.addEventListener('submit', async (e) => {
     message: document.getElementById('message').value.trim()
   };
 
+  const submitBtn = contactForm.querySelector('button[type="submit"]');
+  submitBtn.disabled = true;
   formStatus.textContent = "Sending...";
 
   try {
-    const res = await fetch("https://script.google.com/macros/s/AKfycbwPlICJ0t_4GUlN9sfb1vtqhyoM73P_7mIkpJ_hbtp8C9QP2akE3PVG5f2ildkVp3dd0A/exec", {
+    const res = await fetch(SHEET_ENDPOINT, {
       method: "POST",
       body: JSON.stringify(data),
-      headers: { "Content-Type": "application/json" }
+      headers: { "Content-Type": "text/plain" } // avoids CORS preflight issues with Apps Script
     });
 
-    if (res.ok) {
+    const result = await res.json();
+
+    if (result.result === "success") {
       formStatus.textContent = `Thanks, ${data.name}! Your message has been saved.`;
       contactForm.reset();
     } else {
-      formStatus.textContent = "Error sending message.";
+      formStatus.textContent = "Something went wrong. Please try again.";
     }
   } catch (err) {
-    formStatus.textContent = "Network error.";
+    formStatus.textContent = "Network error. Please try again.";
+  } finally {
+    submitBtn.disabled = false;
   }
 });
 
