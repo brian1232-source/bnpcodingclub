@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Coding Club Submissions</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1B6E3C;
+    --green-dark: #0F4D29;
+    --orange: #F15A24;
+    --bg: #f9fafc;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --border: #e5e7eb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  .topbar {
+    background: #fff;
+    border-bottom: 3px solid var(--green);
+    padding: 1.25rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .topbar h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.1rem;
+    margin: 0;
+  }
+  .topbar h1 span { color: var(--orange); }
+  .btn {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-primary { background: var(--green); color: #fff; }
+  .btn-primary:hover { background: var(--green-dark); }
+  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+
+  /* Lock screen */
+  .lock-screen {
+    min-height: calc(100vh - 70px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+  .lock-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 2.5rem;
+    max-width: 360px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+  }
+  .lock-card .icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  .lock-card h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    margin: 0 0 1.5rem;
+    font-size: 1.2rem;
+  }
+  .lock-card input {
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .lock-card input:focus { outline: 2px solid var(--green); border-color: var(--green); }
+  .lock-card .btn-primary { width: 100%; padding: 0.75rem; }
+  .lock-error { color: var(--orange); font-size: 0.85rem; margin: 0.5rem 0 0; min-height: 1.2em; }
+
+  /* Dashboard */
+  .dashboard { display: none; padding: 2rem; max-width: 1100px; margin: 0 auto; }
+  .stats-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .stat-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    flex: 1;
+    min-width: 140px;
+  }
+  .stat-card .num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--green);
+  }
+  .stat-card .label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .search-input {
+    flex: 1;
+    max-width: 320px;
+    padding: 0.6rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: 'Inter', sans-serif;
+  }
+  .search-input:focus { outline: 2px solid var(--green); border-color: var(--green); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  thead th {
+    background: var(--green-dark);
+    color: #fff;
+    text-align: left;
+    padding: 0.85rem 1rem;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+  tbody td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+    vertical-align: top;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #fafdfb; }
+  .col-time { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+  .col-email { color: var(--green-dark); }
+  .col-msg { max-width: 360px; }
+
+  .empty-state, .loading-state, .error-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--muted);
+  }
+  .error-state { color: var(--orange); }
+
+  @media (max-width: 640px) {
+    table, thead, tbody, th, td, tr { display: block; }
+    thead { display: none; }
+    tbody tr {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 0.75rem;
+      padding: 0.5rem 0;
+    }
+    tbody td {
+      border-bottom: none;
+      padding: 0.4rem 1rem;
+    }
+    tbody td::before {
+      content: attr(data-label);
+      display: block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 0.15rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>Coding Club <span>Admin</span></h1>
+  <button class="btn btn-ghost" id="logoutBtn" style="display:none;">Log out</button>
+</div>
+
+<!-- Lock screen -->
+<div class="lock-screen" id="lockScreen">
+  <div class="lock-card">
+    <div class="icon">🔒</div>
+    <h2>Enter admin password</h2>
+    <input type="password" id="passwordInput" placeholder="Password" autocomplete="off">
+    <button class="btn btn-primary" id="unlockBtn">Unlock</button>
+    <p class="lock-error" id="lockError"></p>
+  </div>
+</div>
+
+<!-- Dashboard -->
+<div class="dashboard" id="dashboard">
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="num" id="totalCount">0</div>
+      <div class="label">Total submissions</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="todayCount">0</div>
+      <div class="label">Today</div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <input type="text" class="search-input" id="searchInput" placeholder="Search by name or email...">
+    <button class="btn btn-ghost" id="refreshBtn">Refresh</button>
+  </div>
+
+  <div id="tableWrap">
+    <div class="loading-state">Loading submissions...</div>
+  </div>
+</div>
+
+<script>
+  // ====== CONFIG ======
+  const ENDPOINT = "https://script.google.com/macros/s/AKfycbzuRu56m0DeaRO_YDzHmL2cSOZR4k07zfcsLbEV2ed7pCT4dgEDHNr3Urpt3pDFyaw/exec";
+
+  const lockScreen = document.getElementById('lockScreen');
+  const dashboard = document.getElementById('dashboard');
+  const passwordInput = document.getElementById('passwordInput');
+  const unlockBtn = document.getElementById('unlockBtn');
+  const lockError = document.getElementById('lockError');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const tableWrap = document.getElementById('tableWrap');
+  const searchInput = document.getElementById('searchInput');
+  const refreshBtn = document.getElementById('refreshBtn');
+  const totalCount = document.getElementById('totalCount');
+  const todayCount = document.getElementById('todayCount');
+
+  let allEntries = [];
+
+  function showDashboard() {
+    lockScreen.style.display = 'none';
+    dashboard.style.display = 'block';
+    logoutBtn.style.display = 'inline-block';
+    loadData();
+  }
+
+  function showLock(errorMsg) {
+    lockScreen.style.display = 'flex';
+    dashboard.style.display = 'none';
+    logoutBtn.style.display = 'none';
+    lockError.textContent = errorMsg || '';
+  }
+
+  async function tryPassword(pwd) {
+    try {
+      const res = await fetch(`${ENDPOINT}?password=${encodeURIComponent(pwd)}`);
+      const result = await res.json();
+      if (result.result === 'success') {
+        sessionStorage.setItem('adminPassword', pwd);
+        allEntries = result.data || [];
+        showDashboard();
+        renderTable(allEntries);
+        updateStats(allEntries);
+      } else {
+        showLock('Incorrect password. Try again.');
+      }
+    } catch (err) {
+      showLock('Network error. Please try again.');
+    }
+  }
+
+  unlockBtn.addEventListener('click', () => {
+    const pwd = passwordInput.value.trim();
+    if (!pwd) return;
+    lockError.textContent = '';
+    unlockBtn.textContent = 'Checking...';
+    unlockBtn.disabled = true;
+    tryPassword(pwd).finally(() => {
+      unlockBtn.textContent = 'Unlock';
+      unlockBtn.disabled = false;
+    });
+  });
+
+  passwordInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') unlockBtn.click();
+  });
+
+  logoutBtn.addEventListener('click', () => {
+    sessionStorage.removeItem('adminPassword');
+    passwordInput.value = '';
+    showLock();
+  });
+
+  async function loadData() {
+    const pwd = sessionStorage.getItem('adminPassword');
+    if (!pwd) return showLock();
+
+    tableWrap.innerHTML = '<div class="loading-state">Loading submissions...</div>';
+    try {
+      const res = await fetch(`${ENDPOINT}?password=${encodeURIComponent(pwd)}`);
+      const result = await res.json();
+      if (result.result === 'success') {
+        allEntries = result.data || [];
+        renderTable(allEntries);
+        updateStats(allEntries);
+      } else {
+        sessionStorage.removeItem('adminPassword');
+        showLock('Session expired. Please log in again.');
+      }
+    } catch (err) {
+      tableWrap.innerHTML = '<div class="error-state">Could not load submissions. Check your connection and try again.</div>';
+    }
+  }
+
+  function updateStats(entries) {
+    totalCount.textContent = entries.length;
+    const today = new Date().toDateString();
+    const todays = entries.filter(e => {
+      const t = new Date(e.Timestamp);
+      return t.toDateString() === today;
+    });
+    todayCount.textContent = todays.length;
+  }
+
+  function renderTable(entries) {
+    if (!entries.length) {
+      tableWrap.innerHTML = '<div class="empty-state">No submissions yet. They will show up here as people fill out the contact form.</div>';
+      return;
+    }
+
+    // newest first
+    const sorted = [...entries].sort((a, b) => new Date(b.Timestamp) - new Date(a.Timestamp));
+
+    const rows = sorted.map(entry => {
+      const time = new Date(entry.Timestamp);
+      const formatted = isNaN(time) ? entry.Timestamp : time.toLocaleString();
+      return `
+        <tr>
+          <td class="col-time" data-label="Time">${formatted}</td>
+          <td data-label="Name">${escapeHtml(entry.Name || '')}</td>
+          <td class="col-email" data-label="Email">${escapeHtml(entry.Email || '')}</td>
+          <td class="col-msg" data-label="Message">${escapeHtml(entry.Message || '')}</td>
+        </tr>`;
+    }).join('');
+
+    tableWrap.innerHTML = `
+      <table>
+        <thead>
+          <tr><th>Time</th><th>Name</th><th>Email</th><th>Message</th></tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.toLowerCase();
+    const filtered = allEntries.filter(e =>
+      (e.Name || '').toLowerCase().includes(q) ||
+      (e.Email || '').toLowerCase().includes(q)
+    );
+    renderTable(filtered);
+  });
+
+  refreshBtn.addEventListener('click', loadData);
+
+  // Auto-login if password already in session
+  const savedPwd = sessionStorage.getItem('adminPassword');
+  if (savedPwd) {
+    tryPassword(savedPwd);
+  }
+</script>
+</body>
+</html>
