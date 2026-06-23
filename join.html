@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Become a Member — Baringo Coding Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  .join-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: #f9fafc;
+  }
+  .join-card {
+    background: #fff;
+    border-radius: 16px;
+    max-width: 480px;
+    width: 100%;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    border: 1px solid #e5e7eb;
+  }
+  .join-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #1B6E3C;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    margin-bottom: 1.5rem;
+  }
+  .join-back:hover { text-decoration: underline; }
+  .join-card .eyebrow {
+    color: #F15A24;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 0 0.5rem;
+  }
+  .join-card h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.6rem;
+    margin: 0 0 0.5rem;
+    color: #0F4D29;
+  }
+  .join-card .lede {
+    color: #666;
+    font-size: 0.95rem;
+    margin: 0 0 1.75rem;
+    line-height: 1.5;
+  }
+  #joinForm label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin: 1.1rem 0 0.4rem;
+    color: #333;
+  }
+  #joinForm input, #joinForm select {
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: 'Inter', sans-serif;
+    background: #fff;
+  }
+  #joinForm input:focus, #joinForm select:focus {
+    outline: 2px solid #1B6E3C;
+    border-color: #1B6E3C;
+  }
+  #joinForm button {
+    margin-top: 1.75rem;
+    width: 100%;
+    padding: 0.85rem;
+    font-size: 1rem;
+  }
+  #joinFormStatus {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    text-align: center;
+    color: #555;
+    min-height: 1.2em;
+  }
+  .join-success {
+    text-align: center;
+    padding: 1rem 0;
+  }
+  .join-success .icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+  .join-success h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    color: #0F4D29;
+    margin: 0 0 0.5rem;
+  }
+  .join-success p { color: #666; margin: 0 0 1.5rem; }
+</style>
+</head>
+<body>
+
+<div class="join-page">
+  <div class="join-card">
+    <a href="index.html" class="join-back">&larr; Back to home</a>
+
+    <div id="formView">
+      <p class="eyebrow">Baringo Coding Club</p>
+      <h1>Become a member</h1>
+      <p class="lede">Tell us a bit about yourself and we'll get you set up with the right sessions and project teams.</p>
+
+      <form id="joinForm">
+        <label for="joinEmail">Email</label>
+        <input type="email" id="joinEmail" name="email" placeholder="you@example.com" required>
+
+        <label for="joinSkill">Your skill level</label>
+        <select id="joinSkill" name="skillLevel" required>
+          <option value="" disabled selected>Choose one</option>
+          <option value="Beginner">Beginner</option>
+          <option value="Some knowledge">Some knowledge</option>
+          <option value="Senior">Senior</option>
+        </select>
+
+        <label for="joinCourse">Course you did</label>
+        <input type="text" id="joinCourse" name="course" placeholder="e.g. ICT, Computer Science, Software Engineering" required>
+
+        <button type="submit" class="btn btn-primary">Submit application</button>
+        <p id="joinFormStatus" role="status"></p>
+      </form>
+    </div>
+
+    <div id="successView" class="join-success" style="display:none;">
+      <div class="icon">🎉</div>
+      <h2>You're in!</h2>
+      <p>Thanks for joining — we'll reach out soon with details on the next session.</p>
+      <a href="index.html" class="btn btn-primary">Back to home</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbyPnTkzo69HaSF1Rd35na0aLtmtDTY0ccfHvYSKwNFMKxzA2XXyFotgy8PqZVbprjjC/exec";
+
+  const joinForm = document.getElementById('joinForm');
+  const joinFormStatus = document.getElementById('joinFormStatus');
+  const formView = document.getElementById('formView');
+  const successView = document.getElementById('successView');
+
+  joinForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    if (!joinForm.checkValidity()) {
+      joinFormStatus.textContent = 'Please fill in all fields.';
+      return;
+    }
+
+    const data = {
+      type: 'membership',
+      email: document.getElementById('joinEmail').value.trim(),
+      skillLevel: document.getElementById('joinSkill').value,
+      course: document.getElementById('joinCourse').value.trim()
+    };
+
+    const submitBtn = joinForm.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    joinFormStatus.textContent = 'Submitting...';
+
+    try {
+      const res = await fetch(SHEET_ENDPOINT, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: { 'Content-Type': 'text/plain' }
+      });
+
+      const result = await res.json();
+
+      if (result.result === 'success') {
+        formView.style.display = 'none';
+        successView.style.display = 'block';
+      } else {
+        joinFormStatus.textContent = 'Something went wrong. Please try again.';
+      }
+    } catch (err) {
+      joinFormStatus.textContent = 'Network error. Please try again.';
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>
