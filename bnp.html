@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baringo Coding Club</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    html { scroll-behavior: smooth; }
+    .nav { position: sticky; top: 0; background: #fff; z-index: 1000; }
+    .about-card, .event-row { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .about-card:hover, .event-row:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+    .competition { background: #f9fafc; padding: 4rem 2rem; }
+    .competition-grid { display: grid; gap: 2rem; grid-template-columns: 1fr 1fr; }
+    .competition-lead blockquote { font-style: italic; border-left: 4px solid #1B6E3C; padding-left: 1rem; color: #333; }
+    .event-category { display: inline-block; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.75rem; }
+    .event-category.beginners { background: #E5F2EA; color: #1B6E3C; }
+    .event-category.javascript { background: #FEEBE2; color: #F15A24; }
+    .event-category.vcs { background: #f3e5f5; color: #7b1fa2; }
+    .event-category.react { background: #E5F2EA; color: #0F4D29; }
+    .event-category.backend { background: #fce4ec; color: #c2185b; }
+    .event-category.ai { background: #E5F2EA; color: #1B6E3C; }
+    .event-category.projects { background: #FEEBE2; color: #C8430F; }
+    .hosting { padding: 4rem 2rem; background: #fff; }
+    .hosting-grid { display: grid; gap: 2rem; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin: 3rem 0; }
+    .hosting-card { background: #f9fafc; padding: 2rem; border-radius: 12px; border: 1px solid #e5e7eb; transition: all 0.3s ease; }
+    .hosting-card:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.08); transform: translateY(-3px); }
+    .hosting-card h3 { color: #1B6E3C; margin-bottom: 1rem; font-size: 1.1rem; }
+    .hosting-card ul { list-style: none; padding: 0; margin: 0; }
+    .hosting-card li { margin-bottom: 0.75rem; color: #555; font-size: 0.95rem; padding-left: 1.5rem; position: relative; }
+    .hosting-card li:before { content: "→"; position: absolute; left: 0; color: #1B6E3C; font-weight: bold; }
+    .hosting-note { text-align: center; color: #666; font-style: italic; margin-top: 2rem; max-width: 600px; margin-left: auto; margin-right: auto; }
+  </style>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#home" class="logo"><img src="logo.jpg" alt="Coding Club logo" class="logo-img">Coding Club</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="nav-links" id="navLinks">
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#events">Events</a>
+      <a href="#competition">Competition</a>
+      <a href="#hosting">Hosting</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- Hero -->
+  <!-- Hero -->
+<!-- Hero -->
+<section class="hero" id="home">
+  <div class="hero-inner">
+    <div class="hero-brand">
+      <img src="bnp.png" alt="BNP Logo" class="hero-logo">
+      <p class="eyebrow">Baringo National Polytechnic</p>
+      
+    </div>
+
+    <h1 class="hero-title">
+      Welcome to the Coding Club<br>
+      Where ideas turn into projects<br>
+      and students become creators.
+    </h1>
+
+<p class="hero-sub">
+  Join a vibrant community at Baringo National Polytechnic.  
+  Whether you’re curious, a beginner, or already coding —  
+  here you’ll learn, build, and grow together.
+</p>
+<div class="hero-actions">
+  <a href="#contact" class="btn btn-primary">Become a member</a>
+  <a href="#events" class="btn btn-ghost">Explore our sessions</a>
+</div>
+
+    </div>
+    <div class="hero-terminal" aria-hidden="true">
+      <div class="terminal-bar">
+        <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+      </div>
+      <div class="terminal-body">
+        <p><span class="prompt">$</span> <span id="typedLine"></span><span class="cursor">&#9608;</span></p>
+        <p class="terminal-out" id="terminalOut"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="about" id="about">
+    <div class="section-head">
+      <p class="eyebrow">About us</p>
+      <h2>Why we meet every week</h2>
+    </div>
+    <div class="about-grid">
+      <div class="about-card">
+        <span class="card-tag">01</span>
+        <h3>Learn by shipping</h3>
+        <p>Every member ships at least one real project per term — a site, a script, a small app — instead of just following tutorials.</p>
+      </div>
+      <div class="about-card">
+        <span class="card-tag">02</span>
+        <h3>Peer-taught</h3>
+        <p>Members who know HTML/CSS, Python, or Java run short sessions. Teaching it is how you actually learn it.</p>
+      </div>
+      <div class="about-card">
+        <span class="card-tag">03</span>
+        <h3>Compete together</h3>
+        <p>We prepare as a team for competitions like KATTI, pairing strong coders with beginners so everyone grows and solve some problem.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Events -->
+  <section class="events" id="events">
+    <div class="section-head">
+      <p class="eyebrow">What's on</p>
+      <h2>Upcoming sessions</h2>
+    </div>
+    <div class="events-list">
+      <article class="event-row">
+        <div class="event-category beginners">Beginners</div>
+        <div class="event-info">
+          <h3>HTML &amp; CSS</h3>
+          <p>Build your first responsive page from a blank file. Learn the fundamentals of web design and styling. Bring a laptop, we'll bring the snacks.</p>
+        </div>
+      </article>
+      <article class="event-row">
+        <div class="event-category javascript">JavaScript</div>
+        <div class="event-info">
+          <h3>JavaScript Fundamentals &amp; DOM Manipulation</h3>
+          <p>Master JavaScript essentials — variables, functions, events, and how to make your pages interactive with DOM manipulation.</p>
+        </div>
+      </article>
+      <article class="event-row">
+        <div class="event-category vcs">Version Control</div>
+        <div class="event-info">
+          <h3>Git &amp; GitHub Workshop</h3>
+          <p>Version control without the panic — branches, commits, pull requests, and collaborative coding explained properly.</p>
+        </div>
+      </article>
+      <article class="event-row">
+        <div class="event-category react">Frontend</div>
+        <div class="event-info">
+          <h3>React JS Development</h3>
+          <p>Build dynamic, component-based web applications. Learn React hooks, state management, and modern frontend development practices.</p>
+        </div>
+      </article>
+      <article class="event-row">
+        <div class="event-category backend">Backend</div>
+        <div class="event-info">
+          <h3>PHP Backend &amp; Databases</h3>
+          <p>Develop server-side applications with PHP. Connect to databases, handle user authentication, and build RESTful APIs.</p>
+        </div>
+      </article>
+      <article class="event-row">
+        <div class="event-category ai">AI Skills</div>
+        <div class="event-info">
+          <h3>How to Use AI in Your Projects</h3>
+          <p>Learn to integrate AI tools and APIs into your applications. Use ChatGPT, Claude APIs, and other AI services to enhance your projects with intelligent features.</p>
+        </div>
+      </article>
+      <article class="event-row">
+        <div class="event-category projects">Projects</div>
+        <div class="event-info">
+          <h3>Build &amp; Ship Real Projects</h3>
+          <p>Collaborate in teams to design, develop, and deploy complete projects. From web apps to system software — bring your ideas to life.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- Competition -->
+  <section class="competition" id="competition">
+    <div class="section-head">
+      <p class="eyebrow">Innovation & Skills</p>
+      <h2>ICT Competition 2026</h2>
+    </div>
+    <div class="competition-grid">
+      <div class="competition-info">
+        <h3>Organized by Coding Club</h3>
+        <p>We are preparing for the upcoming ICT Innovation & Skills Competition. 
+           Projects can be web, mobile, system software, graphics design, or networking solutions.</p>
+        <p>Students may work in <strong>groups of 2</strong> to develop and present their projects.</p>
+        <p>Priority kickoff: <strong>Jitume Initiative</strong> — empowering students to build practical solutions.</p>
+      </div>
+      <div class="competition-lead">
+        <h3>From the Head of Club</h3>
+        <blockquote>
+          “Innovation is not just about ideas, it’s about building solutions that matter.”  
+          — Madam Fiona, Club Head
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hosting -->
+  <section class="hosting" id="hosting">
+    <div class="section-head">
+      <p class="eyebrow">Deploy your projects</p>
+      <h2>Hosting & Deployment Platforms</h2>
+    </div>
+    <div class="hosting-grid">
+      <div class="hosting-card">
+        <h3>Static Sites</h3>
+        <ul>
+          <li><strong>GitHub Pages</strong> — Free hosting for HTML/CSS/JS projects</li>
+          <li><strong>Netlify</strong> — Easy deployment with continuous builds</li>
+          <li><strong>Vercel</strong> — Perfect for Next.js and modern frontends</li>
+        </ul>
+      </div>
+      <div class="hosting-card">
+        <h3>Backend Hosting</h3>
+        <ul>
+          <li><strong>Heroku</strong> — Simple Node.js, Python, PHP deployment</li>
+          <li><strong>Railway</strong> — Modern platform for web apps</li>
+          <li><strong>Render</strong> — Free tier for side projects</li>
+        </ul>
+      </div>
+    </div>
+    <p class="hosting-note">Club members get mentorship on choosing and deploying to the right platform for your project type.</p>
+  </section>
+
+  <!-- Contact -->
+  <section class="contact" id="contact">
+    <div class="section-head">
+      <p class="eyebrow">Get in touch</p>
+      <h2>Ready to join?</h2>
+    </div>
+    <div class="contact-grid">
+      <form class="contact-form" id="contactForm">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" placeholder="Your full name" required>
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required>
+
+        <label for="message">Message</label>
+        <textarea id="message" name="message" rows="4" placeholder="Tell us a bit about yourself" required></textarea>
+
+        <button type="submit" class="btn btn-primary">Send message</button>
+        <p class="form-status" id="formStatus" role="status"></p>
+      
+</form>
+      <div class="contact-info">
+        <h3>Find us</h3>
+        <p>Baringo National Polytechnic<br>Kabarnet, Baringo County</p>
+        <h3>Email</h3>
+        <p>codingclub@bnp.ac.ke</p>
+        <h3>Meet us</h3>
+        <p>Every Tuesday &amp; Thursday<br>4:00 PM, Computer Lab 2</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>&copy; <span id="year"></span> Baringo National Polytechnic Coding Club. Built by members, for members.</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
