@@ -58,7 +58,7 @@ if (prefersReducedMotion) {
 const contactForm = document.getElementById('contactForm');
 const formStatus = document.getElementById('formStatus');
 
-const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbyPnTkzo69HaSF1Rd35na0aLtmtDTY0ccfHvYSKwNFMKxzA2XXyFotgy8PqZVbprjjC/exec";
+const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbz60FyxEpdriM5cOYTYn1kPqGTHN4BBcL0v0_8o3ODAD21J8hYD7rC5ZlaVt3WPyvcl/exec";
 
 contactForm.addEventListener('submit', async (e) => {
   e.preventDefault();

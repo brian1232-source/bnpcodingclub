@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin — Coding Club Submissions</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --green: #1B6E3C;
@@ -18,7 +18,7 @@
   * { box-sizing: border-box; }
   body {
     margin: 0;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     background: var(--bg);
     color: var(--ink);
   }
@@ -31,13 +31,13 @@
     justify-content: space-between;
   }
   .topbar h1 {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Sora', sans-serif;
     font-size: 1.1rem;
     margin: 0;
   }
   .topbar h1 span { color: var(--orange); }
   .btn {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 600;
     font-size: 0.85rem;
     padding: 0.5rem 1rem;
@@ -72,7 +72,7 @@
     margin-bottom: 0.5rem;
   }
   .lock-card h2 {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Sora', sans-serif;
     margin: 0 0 1.5rem;
     font-size: 1.2rem;
   }
@@ -106,7 +106,7 @@
     min-width: 140px;
   }
   .stat-card .num {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Sora', sans-serif;
     font-size: 1.8rem;
     font-weight: 700;
     color: var(--green);
@@ -133,7 +133,7 @@
     border: 1px solid var(--border);
     border-radius: 8px;
     font-size: 0.9rem;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
   }
   .search-input:focus { outline: 2px solid var(--green); border-color: var(--green); }
 
@@ -164,6 +164,19 @@
   tbody tr:last-child td { border-bottom: none; }
   tbody tr:hover { background: #fafdfb; }
   .col-time { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+  .col-action { text-align: right; white-space: nowrap; }
+  .delete-btn {
+    background: #fff;
+    border: 1px solid #f3c7b5;
+    color: var(--orange);
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.35rem 0.7rem;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .delete-btn:hover { background: #fff3ef; }
+  .delete-btn:disabled { opacity: 0.5; cursor: default; }
   .col-email { color: var(--green-dark); }
   .col-msg { max-width: 360px; }
 
@@ -251,7 +264,7 @@
 
 <script>
   // ====== CONFIG ======
-  const ENDPOINT = "https://script.google.com/macros/s/AKfycbyPnTkzo69HaSF1Rd35na0aLtmtDTY0ccfHvYSKwNFMKxzA2XXyFotgy8PqZVbprjjC/exec";
+  const ENDPOINT = "https://script.google.com/macros/s/AKfycbz60FyxEpdriM5cOYTYn1kPqGTHN4BBcL0v0_8o3ODAD21J8hYD7rC5ZlaVt3WPyvcl/exec";
 
   const lockScreen = document.getElementById('lockScreen');
   const dashboard = document.getElementById('dashboard');
@@ -402,16 +415,18 @@
           <td data-label="Name">${escapeHtml(entry.Name || '')}</td>
           <td class="col-email" data-label="Email">${escapeHtml(entry.Email || '')}</td>
           <td class="col-msg" data-label="Message">${escapeHtml(entry.Message || '')}</td>
+          <td data-label="" class="col-action"><button class="delete-btn" data-sheet="Contact Us" data-row="${entry._row}">Delete</button></td>
         </tr>`;
     }).join('');
 
     tableWrap.innerHTML = `
       <table>
         <thead>
-          <tr><th>Time</th><th>Name</th><th>Email</th><th>Message</th></tr>
+          <tr><th>Time</th><th>Name</th><th>Email</th><th>Message</th><th></th></tr>
         </thead>
         <tbody>${rows}</tbody>
       </table>`;
+    attachDeleteHandlers();
   }
 
   function renderMembersTable(entries) {
@@ -431,16 +446,52 @@
           <td class="col-email" data-label="Email">${escapeHtml(entry.Email || '')}</td>
           <td data-label="Skill Level">${escapeHtml(entry['Skill Level'] || '')}</td>
           <td data-label="Course">${escapeHtml(entry.Course || '')}</td>
+          <td data-label="" class="col-action"><button class="delete-btn" data-sheet="Members" data-row="${entry._row}">Delete</button></td>
         </tr>`;
     }).join('');
 
     tableWrap.innerHTML = `
       <table>
         <thead>
-          <tr><th>Time</th><th>Email</th><th>Skill Level</th><th>Course</th></tr>
+          <tr><th>Time</th><th>Email</th><th>Skill Level</th><th>Course</th><th></th></tr>
         </thead>
         <tbody>${rows}</tbody>
       </table>`;
+    attachDeleteHandlers();
+  }
+
+  function attachDeleteHandlers() {
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const sheetName = btn.dataset.sheet;
+        const rowIndex = parseInt(btn.dataset.row, 10);
+        if (!confirm('Delete this entry? This cannot be undone.')) return;
+
+        btn.disabled = true;
+        btn.textContent = 'Deleting...';
+
+        const pwd = sessionStorage.getItem('adminPassword');
+        try {
+          const res = await fetch(ENDPOINT, {
+            method: 'POST',
+            body: JSON.stringify({ type: 'delete', sheetName, rowIndex, password: pwd }),
+            headers: { 'Content-Type': 'text/plain' }
+          });
+          const result = await res.json();
+          if (result.result === 'success') {
+            await loadData();
+          } else {
+            alert('Could not delete: ' + (result.message || 'unknown error'));
+            btn.disabled = false;
+            btn.textContent = 'Delete';
+          }
+        } catch (err) {
+          alert('Network error while deleting.');
+          btn.disabled = false;
+          btn.textContent = 'Delete';
+        }
+      });
+    });
   }
 
   function escapeHtml(str) {
